@@ -1,0 +1,36 @@
+const voitures = [
+  { marque: "Tesla", modele: "Model 3", carburant: "Électrique", annee: 2023, couleur: "Blanc nacré", prix: 45900 },
+  { marque: "BMW", modele: "320d", carburant: "Diesel", annee: 2019, couleur: "Noir métallisé", prix: 32900 },
+  { marque: "Audi", modele: "A4", carburant: "Essence", annee: 2020, couleur: "Gris argent", prix: 33900 },
+  { marque: "Mercedes-Benz", modele: "C200", carburant: "Hybride", annee: 2022, couleur: "Bleu nuit", prix: 41900 },
+  { marque: "Peugeot", modele: "208", carburant: "Essence", annee: 2021, couleur: "Jaune Faro", prix: 19900 },
+  { marque: "Volkswagen", modele: "Golf 8", carburant: "Diesel", annee: 2020, couleur: "Rouge Tornado", prix: 23900 },
+  { marque: "Renault", modele: "Clio V", carburant: "Essence", annee: 2019, couleur: "Orange Valencia", prix: 16900 },
+  { marque: "Toyota", modele: "Yaris Hybrid", carburant: "Hybride", annee: 2023, couleur: "Bleu Électrique", prix: 23900 },
+  { marque: "Ford", modele: "Focus", carburant: "Essence", annee: 2018, couleur: "Gris magnétique", prix: 15400 },
+  { marque: "Opel", modele: "Corsa-e", carburant: "Électrique", annee: 2021, couleur: "Jaune Power", prix: 24900 },
+  { marque: "Volvo", modele: "XC40 Recharge", carburant: "Électrique", annee: 2024, couleur: "Blanc glacier", prix: 51900 },
+  { marque: "Kia", modele: "Sportage", carburant: "Hybride", annee: 2022, couleur: "Vert camouflage", prix: 29900 },
+  { marque: "Hyundai", modele: "Ioniq 5", carburant: "Électrique", annee: 2023, couleur: "Gris cyber", prix: 45900 },
+  { marque: "Fiat", modele: "500e", carburant: "Électrique", annee: 2022, couleur: "Rose gold", prix: 26900 },
+  { marque: "Nissan", modele: "Qashqai", carburant: "Essence", annee: 2021, couleur: "Bleu céramique", prix: 28900 },
+  { marque: "Mazda", modele: "CX-30", carburant: "Essence", annee: 2020, couleur: "Rouge Soul", prix: 25900 },
+  { marque: "Skoda", modele: "Octavia", carburant: "Diesel", annee: 2019, couleur: "Blanc lunaire", prix: 21900 },
+  { marque: "Citroën", modele: "C5 Aircross", carburant: "Hybride", annee: 2022, couleur: "Gris platinium", prix: 30900 },
+  { marque: "Seat", modele: "Leon", carburant: "Essence", annee: 2020, couleur: "Rouge désir", prix: 22900 },
+  { marque: "Dacia", modele: "Spring", carburant: "Électrique", annee: 2023, couleur: "Gris pierre", prix: 16900 }
+];
+
+	1.	Afficher toutes les voitures
+→ Utilise une boucle for ou forEach pour afficher dans la console la marque et le modèle de chaque voiture.
+	2.	Filtrer les voitures électriques
+→ Crée un nouveau tableau voituresElectriques qui contient uniquement les voitures dont le carburant est "Électrique".
+	3.	Trouver la voiture la plus chère
+→ Parcours le tableau et affiche la voiture avec le prix le plus élevé.
+	4.	Calculer le prix moyen des voitures
+→ Additionne tous les prix, puis divise par le nombre total de voitures.
+→ Affiche le résultat dans la console.
+	5.	Afficher les voitures récentes
+→ Affiche uniquement les voitures construites après 2020.
+	6.	Bonus  :
+Trie le tableau voitures par prix (du moins cher au plus cher) et affiche le résultat.

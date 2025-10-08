@@ -1,0 +1,65 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>JavaScript</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+  </head>
+  <body class="m-4">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 20px;
+        }
+
+        .personne {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            padding: 10px;
+            margin: 5px 0;
+        }
+
+        .nom {
+            font-weight: bold;
+            color: #007bff;
+        }
+
+        .age {
+            color: #6c757d;
+        }
+
+        .ville {
+            color: #28a745;
+        }
+
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 10px 5px;
+        }
+
+        button:hover {
+            background: #0056b3;
+        }
+    </style>
+
+    <h1 class="text-3xl font-bold underline mb-2">
+      Liste des personnes
+    </h1>
+    <button id="showSimple"> Afficher la liste des prénoms </button>
+    <button id="showDetailed">Afficher la liste détaillée</button>
+    <button id="showFiltered">Afficher uniquement les adultes</button>
+    <ul id="list">
+        <li>Cliquez sur un bouton pour afficher la liste</li>
+    </ul>
+    <script src="script.js"></script>
+  </body>
+</html>

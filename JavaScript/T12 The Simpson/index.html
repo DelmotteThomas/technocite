@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Les Simpsons</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+  </head>
+
+  <body class="bg-gray-50 flex flex-col items-center min-h-screen py-10">
+    <header>
+      <img
+        src="/T12 The Simpson/src/bgHeader.jpg"
+        alt="Logo des Simpsons"
+        class="h-64"
+      />
+    </header>
+    <main>
+      <h1 class="text-3xl text-center font-bold m-12">Popular characters</h1>
+      <div class="flex justify-center mb-8">
+        <button
+          id="btnQuote"
+          class="justify-center bg-yellow-400 hover:bg-yellow-500 text-white font-semibold px-4 py-2 rounded-full shadow-lg"
+        >
+          💬 Citation aléatoire
+        </button>
+        <p class="ml-4 text-gray-600 self-center" id="quoteInfo"
+          >Cliquez pour une citation aléatoire
+        </p>
+      </div>
+
+      <!-- conteneur des cartes -->
+      <div
+        id="characters"
+        class="grid gap-8 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 justify-items-center w-full max-w-7xl px-6"
+      ></div>
+      <!-- pagination -->
+      <div class="w-full flex justify-center items-center gap-4 my-6">
+        <button
+          id="btnPrev"
+          class="px-4 py-2 bg-gray-200 rounded disabled:opacity-50"
+          disabled
+        >
+          Précédent
+        </button>
+        <span id="pageIndicator" class="text-gray-700 font-medium"
+          >Page 1 / ?</span
+        >
+        <button
+          id="btnNext"
+          class="px-4 py-2 bg-gray-200 rounded disabled:opacity-50"
+        >
+          Suivant
+        </button>
+      </div>
+    </main>
+    <footer class="footer mt-16">
+      <p>© 2025 Delto — Clone d'api The Simpsons</p>
+    </footer>
+
+    <script src="script.js"></script>
+  </body>
+</html>

@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>JavaScript Calculatrice</title>
+  </head>
+  <body>
+    <style>
+      body {
+        font-family: sans-serif;
+        display: grid;
+        place-items: center;
+        height: 100vh;
+      }
+
+      .calc {
+        background: #f9f9f9;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 4px 12px #0002;
+      }
+
+      input {
+        margin: 5px;
+        padding: 5px;
+        font-size: 16px;
+        width: 80px;
+        text-align: center;
+      }
+
+      button {
+        margin: 5px;
+        padding: 10px 14px;
+        font-size: 16px;
+        cursor: pointer;
+      }
+
+      p {
+        font-size: 18px;
+        font-weight: bold;
+      }
+    </style>
+
+    <div class="calc">
+      <h1>Calculette</h1>
+      <input id="a" type="number" placeholder="a" />
+      <input id="b" type="number" placeholder="b" />
+      <div>
+        <button id="add">+</button>
+        <button id="sub">-</button>
+        <button id="mul">*</button>
+        <button id="div">/</button>
+      </div>
+      <p>Résultat: <span id="res"></span></p>
+    </div>
+
+    <script src="script.js"></script>
+  </body>
+</html>

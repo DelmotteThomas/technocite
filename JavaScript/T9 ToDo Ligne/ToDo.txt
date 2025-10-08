@@ -1,0 +1,18 @@
+const todos = [
+  { id: 1, titre: "Acheter du pain", description: "Aller à la boulangerie avant 18h", termine: false, dateFin: "2025-10-06" },
+  { id: 2, titre: "Envoyer un e-mail à Jean", description: "Répondre au sujet du projet web", termine: true, dateFin: "2025-10-05" },
+  { id: 3, titre: "Faire du sport", description: "30 minutes de course à pied", termine: false, dateFin: "2025-10-07" },
+  { id: 4, titre: "Payer la facture d’électricité", description: "Avant le 10 octobre", termine: false, dateFin: "2025-10-10" },
+  { id: 5, titre: "Nettoyer la voiture", description: "Laver l’extérieur et passer l’aspirateur", termine: true, dateFin: "2025-10-03" },
+  { id: 6, titre: "Réviser le cours de JavaScript", description: "Relire les boucles et fonctions", termine: false, dateFin: "2025-10-08" },
+  { id: 7, titre: "Appeler maman", description: "Demander des nouvelles et fixer un repas", termine: false, dateFin: "2025-10-06" },
+  { id: 8, titre: "Préparer la présentation", description: "Slides pour la réunion de lundi", termine: true, dateFin: "2025-10-05" },
+  { id: 9, titre: "Faire les courses", description: "Lait, œufs, fruits, légumes", termine: false, dateFin: "2025-10-09" },
+  { id: 10, titre: "Planifier le week-end", description: "Choisir une destination et réserver", termine: false, dateFin: "2025-10-11" }
+];
+
+    •    manipuler le DOM avec JavaScript,
+    •    parcourir un tableau d’objets,
+    •    gérer des événements (click),
+    •    afficher des données dynamiquement,
+    •    et appliquer un peu de logique (terminée / en retard / à venir).

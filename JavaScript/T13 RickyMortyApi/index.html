@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Rick & Morty Api Clone</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+  </head>
+
+  <body class="bg-gray-50 flex flex-col items-center min-h-screen py-10">
+    <header>
+      <img
+        src="/"
+        alt="Logo des Simpsons"
+        class="h-64"
+      />
+    </header>
+    <main>
+      <h1 class="text-3xl text-center font-bold m-12">Popular characters</h1>
+     
+
+      <!-- conteneur des cartes -->
+      <div
+        id="characters"
+        class="grid gap-8 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 justify-items-center w-full max-w-7xl px-6"
+      ></div>
+     
+    </main>
+    <footer class="footer mt-16">
+      <p>© 2025 Delto — Clone d'api The Simpsons</p>
+    </footer>
+
+    <script src="script.js"></script>
+  </body>
+</html>
