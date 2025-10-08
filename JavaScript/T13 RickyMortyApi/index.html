@@ -28,9 +28,15 @@
       >
         <!-- Les cartes seront insérées ici par JavaScript -->
       </div>
-
+      <!-- Bouton retour à la liste -->
+      <button
+        id="btnBack"
+        class="hidden mt-8 px-4 py-2 bg-gray-300 rounded hover:bg-gray-400 mb-4"
+      >
+        ⬅ Retour à la liste
+      </button>
       <!-- pagination -->
-      <div
+      <div id="pagination"
         class="w-full flex justify-center items-center gap-4 py-4 bg-white/80 backdrop-blur-sm shadow-inner"
       >
         <button
@@ -50,7 +56,7 @@
           Suivant ▶
         </button>
       </div>
-      
+
       <!-- Modal (hidden par défault) -->
       <div
         id="characterModal"
