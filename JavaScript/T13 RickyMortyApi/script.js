@@ -1,11 +1,14 @@
 // Déclaration des variables
 const BASE_URL = "https://rickandmortyapi.com/api";
-
 let allCharacters = {};
 let currentPage = 1;
 let totalPages = 1;
 let nextPageUrl = null;
 let prevPageUrl = null;
+
+///////////////
+///Fonction///
+//////////////
 
 // Gestion des erreurs
 function showError(error) {
@@ -79,25 +82,6 @@ async function fetchEpisodes(episodeUrls, limit = 10) {
   );
   return results;
 }
-
-// Événements au chargement de la page
-
-window.addEventListener("DOMContentLoaded", async () => {
-  document
-    .getElementById("btnNext")
-    .addEventListener("click", () => nextPageUrl && fetchPage(nextPageUrl));
-  document
-    .getElementById("btnPrev")
-    .addEventListener("click", () => prevPageUrl && fetchPage(prevPageUrl));
-  await fetchPage(`${BASE_URL}/character?page=1`);
-});
-// Evenement bouton retour
-
-document.getElementById("btnBack").addEventListener("click", () => {
-  document.getElementById("btnBack").classList.add("hidden");
-  fetchPage(`${BASE_URL}/character?page=1`);
-  document.getElementById("pagination").classList.remove("hidden");
-});
 
 // function d’affichage
 function showList(c) {
@@ -194,9 +178,9 @@ async function showDetails(c) {
 
   try {
     const episodeData = await fetchEpisodes(c.episode);
-    episodes.textContent =
-      "Épisodes : " +
-      episodeData.map((e) => e.name).join(", ") +
+    episodes.innerHTML =
+      '<span class="font-bold">Épisodes :</span> ' +
+      episodeData.map((e) => `<span class="flex-col">${e.name}</span>`).join(", ") +
       (c.episode.length > 10 ? "..." : "");
   } catch (err) {
     episodes.textContent = "Erreur de chargement des épisodes";
@@ -252,22 +236,43 @@ function filterByLocation(locationName) {
   container.appendChild(title);
   filtered.forEach(showList);
 }
+///////////////
+//Evénements//
+/////////////
+// Chargement de la page
+
+window.addEventListener("DOMContentLoaded", async () => {
+  document
+    .getElementById("btnNext")
+    .addEventListener("click", () => nextPageUrl && fetchPage(nextPageUrl));
+  document
+    .getElementById("btnPrev")
+    .addEventListener("click", () => prevPageUrl && fetchPage(prevPageUrl));
+  await fetchPage(`${BASE_URL}/character?page=1`);
+});
+// Click sur le bouton retour
+
+document.getElementById("btnBack").addEventListener("click", () => {
+  document.getElementById("btnBack").classList.add("hidden");
+  fetchPage(`${BASE_URL}/character?page=1`);
+  document.getElementById("pagination").classList.remove("hidden");
+});
 
 // Fermeture du modal
-
+// Bouton de fermeture
 document.getElementById("closeModal").addEventListener("click", () => {
   const modal = document.getElementById("characterModal");
   modal.classList.add("hidden");
   modal.classList.remove("flex");
 });
-
+// Fermeture en cliquant en dehors
 document.getElementById("characterModal").addEventListener("click", (e) => {
   if (e.target.id === "characterModal") {
     e.currentTarget.classList.add("hidden");
     e.currentTarget.classList.remove("flex");
   }
 });
-
+// Fermeture avec la touche Échap
 document.addEventListener("keydown", (e) => {
   if (e.key === "Escape") {
     const modal = document.getElementById("characterModal");
