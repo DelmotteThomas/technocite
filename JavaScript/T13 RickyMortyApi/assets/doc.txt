@@ -1,0 +1,4 @@
+Lien utile pour la DOC 
+
+
+https://rickandmortyapi.com/documentation/#filter-characters
