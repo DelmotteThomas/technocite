@@ -58,7 +58,9 @@ async function fetchPage(pageOrUrl) {
     // Pagination
     document.getElementById("btnNext").disabled = !nextPageUrl;
     document.getElementById("btnPrev").disabled = !prevPageUrl;
-    document.getElementById("pageIndicator").textContent = `Page ${currentPage} / ${totalPages}`;
+    document.getElementById(
+      "pageIndicator"
+    ).textContent = `Page ${currentPage} / ${totalPages}`;
   } catch (error) {
     showError(error);
   }
@@ -81,45 +83,86 @@ async function fetchEpisodes(episodeUrls, limit = 10) {
 // Événements au chargement de la page
 
 window.addEventListener("DOMContentLoaded", async () => {
-  document.getElementById("btnNext").addEventListener("click", () => nextPageUrl && fetchPage(nextPageUrl));
-  document.getElementById("btnPrev").addEventListener("click", () => prevPageUrl && fetchPage(prevPageUrl));
+  document
+    .getElementById("btnNext")
+    .addEventListener("click", () => nextPageUrl && fetchPage(nextPageUrl));
+  document
+    .getElementById("btnPrev")
+    .addEventListener("click", () => prevPageUrl && fetchPage(prevPageUrl));
   await fetchPage(`${BASE_URL}/character?page=1`);
 });
+// Evenement bouton retour
 
+document.getElementById("btnBack").addEventListener("click", () => {
+  document.getElementById("btnBack").classList.add("hidden");
+  fetchPage(`${BASE_URL}/character?page=1`);
+  document.getElementById("pagination").classList.remove("hidden");
+});
 
-// function d’affichage 
+// function d’affichage
 function showList(c) {
   const container = document.getElementById("characters");
   const card = document.createElement("div");
 
+  // Création des éléments un par un
   const nameEl = document.createElement("h2");
-  nameEl.className = "text-lg font-bold hover:text-orange-500 cursor-pointer mb-2";
+  nameEl.className =
+    "text-lg font-bold hover:text-orange-500 cursor-pointer mb-2";
   nameEl.textContent = c.name;
   nameEl.addEventListener("click", () => showDetails(c));
 
+  const imgEl = document.createElement("img");
+  imgEl.src = c.image;
+  imgEl.alt = c.name;
+  imgEl.className = "w-32 h-32 object-contain mb-3 rounded-lg";
+
+  const speciesEl = document.createElement("p");
+  speciesEl.className = "text-gray-500 text-sm mb-1";
+  speciesEl.textContent = `${c.species}${c.type ? ` (${c.type})` : ""}`;
+
+  const statusEl = document.createElement("p");
   const statusColor =
     c.status === "Alive"
       ? "text-green-600"
       : c.status === "Dead"
       ? "text-red-600"
       : "text-gray-500";
+  statusEl.className = `text-sm font-semibold ${statusColor}`;
+  statusEl.textContent = c.status === "unknown" ? "Inconnu" : c.status;
 
-  if (c.status === "unknown") c.status = "Inconnu";
+  const originEl = document.createElement("p");
+  originEl.className =
+    "text-xs text-gray-600 mt-2 italic hover:text-orange-500 cursor-pointer";
+  originEl.textContent = `Origine : ${c.origin.name}`;
 
+  const locationEl = document.createElement("p");
+  locationEl.className =
+    "text-xs text-gray-600 italic hover:text-orange-500 cursor-pointer";
+  locationEl.textContent = `Dernière apparition : ${c.location.name}`;
+
+  if (c.origin.name) {
+    originEl.addEventListener("click", () => filterByOrigin(c.origin.name));
+  }
+
+  if (c.location.name) {
+    locationEl.addEventListener("click", () =>
+      filterByLocation(c.location.name)
+    );
+  }
+
+  // 💡 Assemblage
   card.className =
     "w-full max-w-[260px] hover:scale-105 transition-transform flex flex-col items-center text-center bg-white rounded-xl shadow-md border border-gray-200 p-5 hover:shadow-lg hover:bg-green-50";
 
-  card.innerHTML = `
-    <img src="${c.image}" alt="${c.name}" class="w-32 h-32 object-contain mb-3 rounded-lg">
-    <p class="text-gray-500 text-sm mb-1">${c.species}${c.type}</p>
-    <p class="text-sm ${statusColor} font-semibold">${c.status}</p>
-    <p class="text-xs text-gray-600 mt-2 italic hover:text-orange-500">Origine : ${c.origin.name}</p>
-    <p class="text-xs text-gray-600 italic hover:text-orange-500">Dernière apparition : ${c.location.name}</p>
-  `;
-  card.prepend(nameEl);
+  card.appendChild(nameEl);
+  card.appendChild(imgEl);
+  card.appendChild(speciesEl);
+  card.appendChild(statusEl);
+  card.appendChild(originEl);
+  card.appendChild(locationEl);
+
   container.appendChild(card);
 }
-
 // Détails (modal)
 
 async function showDetails(c) {
@@ -163,7 +206,52 @@ async function showDetails(c) {
   modal.classList.add("flex");
 }
 
+function filterByOrigin(originName) {
+  document.getElementById("btnBack").classList.remove("hidden");
+  document.getElementById("pagination").classList.add("hidden");
+  const container = document.getElementById("characters");
+  container.innerHTML = "";
 
+  // Filtrer les personnages déjà chargés
+  const filtered = allCharacters.results.filter(
+    (char) => char.origin.name === originName
+  );
+
+  if (filtered.length === 0) {
+    container.innerHTML = `<p class="text-center text-gray-500 italic">Aucun personnage originaire de ${originName} trouvé.</p>`;
+    return;
+  }
+
+  const title = document.createElement("h2");
+  title.className =
+    "text-2xl font-bold text-center w-full col-span-full text-orange-600 mb-6";
+  title.textContent = `Personnages originaires de : ${originName}`;
+  container.appendChild(title);
+  filtered.forEach(showList);
+}
+
+function filterByLocation(locationName) {
+  document.getElementById("btnBack").classList.remove("hidden");
+  document.getElementById("pagination").classList.add("hidden");
+  const container = document.getElementById("characters");
+  container.innerHTML = "";
+
+  const filtered = allCharacters.results.filter(
+    (char) => char.location.name === locationName
+  );
+
+  if (filtered.length === 0) {
+    container.innerHTML = `<p class="text-center text-gray-500 italic">Aucun personnage trouvé dans ${locationName}.</p>`;
+    return;
+  }
+
+  const title = document.createElement("h2");
+  title.className =
+    "text-2xl font-bold text-center w-full col-span-full text-orange-600 mb-6";
+  title.textContent = `Personnages présents à : ${locationName}`;
+  container.appendChild(title);
+  filtered.forEach(showList);
+}
 
 // Fermeture du modal
 
