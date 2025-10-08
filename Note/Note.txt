@@ -1,0 +1,6 @@
+Note Git
+////////
+
+git add .
+git commit -m "Description de la modification"
+git push
