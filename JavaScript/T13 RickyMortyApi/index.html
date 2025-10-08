@@ -3,31 +3,88 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Rick & Morty Api Clone</title>
+    <title>Rick & Morty API Clone</title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
   </head>
 
   <body class="bg-gray-50 flex flex-col items-center min-h-screen py-10">
-    <header>
+    <header class="mb-8">
       <img
-        src="/"
-        alt="Logo des Simpsons"
-        class="h-64"
+        src="../T13 RickyMortyApi/assets/Rick_et_Morty_Logo_FR.png"
+        alt="Rick & Morty Logo"
+        class="h-32 mx-auto"
       />
     </header>
-    <main>
-      <h1 class="text-3xl text-center font-bold m-12">Popular characters</h1>
-     
+
+    <main class="w-full flex flex-col items-center">
+      <h1 class="text-3xl text-center font-bold m-12">
+        Personnages de Rick & Morty
+      </h1>
 
       <!-- conteneur des cartes -->
       <div
         id="characters"
         class="grid gap-8 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 justify-items-center w-full max-w-7xl px-6"
-      ></div>
-     
+      >
+        <!-- Les cartes seront insérées ici par JavaScript -->
+      </div>
+
+      <!-- pagination -->
+      <div
+        class="w-full flex justify-center items-center gap-4 py-4 bg-white/80 backdrop-blur-sm shadow-inner"
+      >
+        <button
+          id="btnPrev"
+          class="px-4 py-2 bg-gray-200 rounded disabled:opacity-50"
+          disabled
+        >
+          ◀ Précédent
+        </button>
+        <span id="pageIndicator" class="text-gray-700 font-medium">
+          Page 1 / ?
+        </span>
+        <button
+          id="btnNext"
+          class="px-4 py-2 bg-gray-200 rounded disabled:opacity-50"
+        >
+          Suivant ▶
+        </button>
+      </div>
+      
+      <!-- Modal (hidden par défault) -->
+      <div
+        id="characterModal"
+        class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50"
+      >
+        <div
+          class="bg-white rounded-xl p-6 max-w-md w-[90%] shadow-xl relative text-center"
+        >
+          <button
+            id="closeModal"
+            class="absolute top-2 right-3 text-gray-400 hover:text-gray-600 text-xl font-bold"
+          >
+            ×
+          </button>
+
+          <img
+            id="modalImage"
+            src=""
+            alt=""
+            class="w-32 h-32 mx-auto rounded-full object-cover mb-4"
+          />
+          <h2 id="modalName" class="text-2xl font-bold mb-2"></h2>
+          <p id="modalStatus" class="text-sm mb-2"></p>
+          <p id="modalSpecies" class="text-sm mb-2"></p>
+          <p id="modalGender" class="text-sm mb-2"></p>
+          <p id="modalOrigin" class="text-sm mb-2"></p>
+          <p id="modalLocation" class="text-sm mb-2"></p>
+          <p id="modalEpisodes" class="text-sm italic text-gray-600 mt-4"></p>
+        </div>
+      </div>
     </main>
-    <footer class="footer mt-16">
-      <p>© 2025 Delto — Clone d'api The Simpsons</p>
+
+    <footer class="mt-24 text-gray-500 text-sm">
+      <p>© 2025 Delto — Clone d'API Rick & Morty</p>
     </footer>
 
     <script src="script.js"></script>
