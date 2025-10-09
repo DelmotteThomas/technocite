@@ -190,6 +190,7 @@ async function showDetails(c) {
   modal.classList.add("flex");
 }
 
+
 function filterByOrigin(originName) {
   document.getElementById("btnBack").classList.remove("hidden");
   document.getElementById("pagination").classList.add("hidden");
