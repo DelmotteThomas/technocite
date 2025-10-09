@@ -1,9 +1,11 @@
 const baseUrl = "https://pokeapi.co/api/v2";
-let allPokemon = {};
+let allPokemonList = [];
 let currentPage = 1;
 let totalPages = 1;
 let nextPageUrl = null;
 let prevPageUrl = null;
+
+
 
 // 🎨 Palette de couleurs globales
 const THEME = {
@@ -112,7 +114,7 @@ async function showList(pokemon) {
   // ID
   const idEl = document.createElement("p");
   idEl.textContent = `#${detailsPokemon.id.toString().padStart(3, "0")}`;
-  idEl.className = "text-white absolute top-3 right-4 text-sm text-gray-400";
+  idEl.className = "absolute top-3 right-4 text-lg text-gray-400";
 
   // Image
   const imgEl = document.createElement("img");
@@ -120,6 +122,7 @@ async function showList(pokemon) {
   imgEl.alt = pokemon.name;
   imgEl.className =
     "absolute bottom-20 w-40 h-40 object-contain z-1000 transition-transform duration-300 hover:scale-130";
+
 
   // Bande grise arrondie
   const bgBottom = document.createElement("div");
@@ -145,7 +148,9 @@ async function showList(pokemon) {
   const nameEl = document.createElement("h2");
   nameEl.textContent = capitalizeFirst(pokemon.name) ;
   nameEl.className =
-    "absolute bottom-8 left-0 w-full text-center text-xl font-semibold capitalize text-gray-800 z-30";
+    "absolute bottom-6 left-0 w-full text-center text-xl font-semibold capitalize text-gray-800 z-30";
+
+    card.addEventListener("click", () => showDetails(pokemon));
 
   // Assemblage
   card.appendChild(idEl);
@@ -156,7 +161,103 @@ async function showList(pokemon) {
   container.appendChild(card);
 }
 
-// --- Chargement initial + pagination ---
+async function showDetails(pokemon) {
+  const modal = document.getElementById("pokemonModal");
+  const modalHeader = document.getElementById("modalHeader");
+
+  // Récupération des données détaillées
+  const res = await fetch(pokemon.url);
+  const details = await res.json();
+
+  // Couleur principale selon le type
+  const mainType = details.types[0].type.name;
+  const mainColor = THEME.typeColors[mainType] || THEME.secondary;
+
+  // --- Header ---
+  modalHeader.style.backgroundColor = mainColor;
+  document.getElementById("modalName").textContent = capitalizeFirst(details.name);
+  document.getElementById("modalId").textContent = `#${details.id.toString().padStart(3, "0")}`;
+  document.getElementById("modalImage").src =
+    details.sprites.other["official-artwork"].front_default;
+
+  // --- Types ---
+  const typesContainer = document.getElementById("modalTypes");
+  typesContainer.innerHTML = "";
+  
+  details.types.forEach((typeInfo) => {
+    const badge = document.createElement("span");
+    badge.textContent = capitalizeFirst(typeInfo.type.name);
+    badge.className =
+      "px-3 py-1 text-sm rounded-full text-white shadow-md";
+    badge.style.backgroundColor = THEME.typeColors[typeInfo.type.name];
+    typesContainer.appendChild(badge);
+  });
+
+  // --- About section ---
+  document.getElementById("modalWeight").textContent = `${details.weight / 10} kg`;
+  document.getElementById("modalHeight").textContent = `${details.height / 10} m`;
+  document.getElementById("modalAbilities").textContent = details.abilities
+    .map((a) => capitalizeFirst(a.ability.name))
+    .join(", ");
+
+  // --- Description depuis species ---
+  const speciesRes = await fetch(details.species.url);
+  const speciesData = await speciesRes.json();
+  const flavor = speciesData.flavor_text_entries.find(
+    (entry) => entry.language.name === "en"
+  );
+  document.getElementById("modalDescription").textContent =
+    flavor ? flavor.flavor_text.replace(/\f/g, " ") : "No description available.";
+
+  // --- Base stats ---
+  const statsContainer = document.getElementById("modalStats");
+  statsContainer.innerHTML = "";
+  details.stats.forEach((s) => {
+    const line = document.createElement("div");
+    line.className = "flex items-center gap-2 text-sm";
+
+    const label = document.createElement("span");
+    label.className = "w-16 font-semibold uppercase";
+    label.textContent = s.stat.name.slice(0, 3);
+
+    const value = document.createElement("span");
+    value.className = "w-10 text-gray-700";
+    value.textContent = s.base_stat.toString().padStart(3, "0");
+
+    const bar = document.createElement("div");
+    bar.className = "flex-1 bg-gray-200 h-2 rounded overflow-hidden";
+    const fill = document.createElement("div");
+    fill.className = "h-full bg-green-500";
+    fill.style.width = `${(s.base_stat / 150) * 100}%`;
+    bar.appendChild(fill);
+
+    line.append(label, value, bar);
+    statsContainer.appendChild(line);
+  });
+
+  // Affichage
+  modal.classList.remove("hidden");
+  modal.classList.add("flex");
+}
+
+// Fermeture
+document.getElementById("closeModal").addEventListener("click", () => {
+  const modal = document.getElementById("pokemonModal");
+  modal.classList.add("hidden");
+  modal.classList.remove("flex");
+});
+
+document.getElementById("pokemonModal").addEventListener("click", (e) => {
+  if (e.target.id === "pokemonModal") {
+    e.currentTarget.classList.add("hidden");
+    e.currentTarget.classList.remove("flex");
+  }
+});
+
+
+
+
+// --- Chargement liste de carte + pagination ---
 window.addEventListener("DOMContentLoaded", () => {
   fetchPage(1);
 
@@ -167,14 +268,30 @@ window.addEventListener("DOMContentLoaded", () => {
   document.getElementById("btnPrev").addEventListener("click", () => {
     if (prevPageUrl && currentPage > 1) fetchPage(currentPage - 1);
   });
+ document.getElementById("searchInput").addEventListener("input", async (e) => {
+    const term = e.target.value.toLowerCase().trim();
+    const container = document.getElementById("characters");
+    container.innerHTML = "";
 
-  // 🔍 Recherche dynamique
-  document.getElementById("searchInput").addEventListener("input", (e) => {
-    const term = e.target.value.toLowerCase();
-    const cards = document.querySelectorAll("#characters > div");
-    cards.forEach((card) => {
-      const name = card.querySelector("h2").textContent.toLowerCase();
-      card.style.display = name.includes(term) ? "block" : "none";
-    });
+    if (term === "") {
+      fetchPage(currentPage);
+      return;
+    }
+
+    const filtered = allPokemonList.filter((p) =>
+      p.name.toLowerCase().includes(term)
+    );
+
+    if (filtered.length === 0) {
+      container.innerHTML =
+        "<p class='text-center text-gray-500'>Aucun Pokémon trouvé 😔</p>";
+      return;
+    }
+
+    const limit = Math.min(filtered.length, 20);
+    for (let i = 0; i < limit; i++) {
+      await showList(filtered[i]);
+    }
   });
 });
+
