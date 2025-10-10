@@ -4,6 +4,8 @@ let currentPage = 1;
 let totalPages = 1;
 let nextPageUrl = null;
 let prevPageUrl = null;
+let currentPokemonId = null;
+
 
 // 🎨 Palette de couleurs globales
 const THEME = {
@@ -91,7 +93,7 @@ async function fetchPage(page = 1) {
     console.error(error);
   }
 }
-
+// Récupération des infos d’une espèce (nom FR, description)
 async function fetchPokemonSpecies(id) {
   const res = await fetch(`${baseUrl}/pokemon-species/${id}`);
   if (!res.ok) throw new Error("Erreur lors du chargement de la fiche espèce");
@@ -108,6 +110,28 @@ async function fetchPokemonSpecies(id) {
       ?.flavor_text.replace(/\n|\f/g, " ") || "Description non disponible.";
 
   return { nameFR, flavorFR };
+}
+
+// --- Préchargement rapide des Pokémon avec nom FR ---
+async function preloadAllPokemon() {
+  const res = await fetch(`${baseUrl}/pokemon?limit=1000`);
+  const data = await res.json();
+
+  allPokemonList = await Promise.all(
+    data.results.map(async (p) => {
+      const id = p.url.split("/").filter(Boolean).pop();
+      const species = await fetch(`${baseUrl}/pokemon-species/${id}`).then((r) =>
+        r.json()
+      );
+      const nameFR =
+        species.names.find((n) => n.language.name === "fr")?.name ||
+        p.name;
+
+      return { id: Number(id), name: p.name, nameFR, url: p.url };
+    })
+  );
+
+  console.log("✅ Pokémon FR chargés :", allPokemonList.length);
 }
 
 // Affichage Pokémons
@@ -183,8 +207,15 @@ async function showDetails(pokemon) {
   const modalHeader = document.getElementById("modalHeader");
 
   // Récupération des données détaillées
-  const res = await fetch(pokemon.url);
-  const details = await res.json();
+  let details;
+  if (pokemon.url) {
+    // Si c’est un objet léger avec une URL
+    const res = await fetch(pokemon.url);
+    details = await res.json();
+  } else {
+    // Si c’est déjà un objet complet
+    details = pokemon;
+  }
 
   const { nameFR, flavorFR } = await fetchPokemonSpecies(details.id);
 
@@ -193,20 +224,17 @@ async function showDetails(pokemon) {
   const mainColor = THEME.typeColors[mainType] || THEME.secondary;
 
   // --- Header ---
-
   modalHeader.style.backgroundColor = mainColor;
-
   document.getElementById("modalName").textContent = capitalizeFirst(nameFR);
   document.getElementById("modalId").textContent = `#${details.id
     .toString()
     .padStart(3, "0")}`;
-  const render = (document.getElementById("modalImage").src =
-    details.sprites.other["official-artwork"].front_default);
+  document.getElementById("modalImage").src =
+    details.sprites.other["official-artwork"].front_default;
 
   // --- Types ---
   const typesContainer = document.getElementById("modalTypes");
   typesContainer.innerHTML = "";
-
   details.types.forEach((typeInfo) => {
     const badge = document.createElement("span");
     badge.textContent = capitalizeFirst(typeInfo.type.name);
@@ -215,7 +243,9 @@ async function showDetails(pokemon) {
     typesContainer.appendChild(badge);
   });
 
-  // --- About section ---
+  document.getElementById("modalAboutTitle").style.color = mainColor;
+
+  // --- About ---
   document.getElementById("modalWeight").textContent = `${
     details.weight / 10
   } kg`;
@@ -226,14 +256,8 @@ async function showDetails(pokemon) {
     .map((a) => capitalizeFirst(a.ability.name))
     .join(", ");
 
-  // --- Description depuis species ---
-  const speciesRes = await fetch(details.species.url);
-  const speciesData = await speciesRes.json();
-  const flavor = speciesData.flavor_text_entries.find(
-    (entry) => entry.language.name === "en"
-  );
   document.getElementById("modalDescription").textContent = flavorFR;
-
+  document.getElementById("modalBaseStatTitle").style.color = mainColor;
   // --- Base stats ---
   const statsContainer = document.getElementById("modalStats");
   statsContainer.innerHTML = "";
@@ -262,7 +286,46 @@ async function showDetails(pokemon) {
     statsContainer.appendChild(line);
   });
 
-  // Affichage
+  // Sauvegarde de l’ID pour navigation
+  currentPokemonId = details.id;
+
+  // --- Navigation boutons ---
+  document.getElementById("modalPrev").onclick = async () => {
+    if (currentPokemonId > 1) {
+      const res = await fetch(`${baseUrl}/pokemon/${currentPokemonId - 1}`);
+      const data = await res.json();
+      showDetails(data);
+    }
+  };
+
+  document.getElementById("modalNext").onclick = async () => {
+    const res = await fetch(`${baseUrl}/pokemon/${currentPokemonId + 1}`);
+    if (!res.ok) return;
+    const data = await res.json();
+    showDetails(data);
+  };
+
+  // --- Navigation clavier ---
+  window.onkeydown = async (e) => {
+    if (modal.classList.contains("hidden")) return;
+    if (e.key === "ArrowLeft" && currentPokemonId > 1) {
+      const res = await fetch(`${baseUrl}/pokemon/${currentPokemonId - 1}`);
+      const data = await res.json();
+      showDetails(data);
+    }
+    if (e.key === "ArrowRight") {
+      const res = await fetch(`${baseUrl}/pokemon/${currentPokemonId + 1}`);
+      if (res.ok) {
+        const data = await res.json();
+        showDetails(data);
+      }
+    }
+    if (e.key === "Escape") {
+      modal.classList.add("hidden");
+    }
+  };
+
+  // --- Affichage ---
   modal.classList.remove("hidden");
   modal.classList.add("flex");
 }
@@ -282,9 +345,32 @@ document.getElementById("pokemonModal").addEventListener("click", (e) => {
 });
 
 // --- Chargement liste de carte + pagination ---
-window.addEventListener("DOMContentLoaded", () => {
-  fetchPage(1);
 
+
+window.addEventListener("DOMContentLoaded", async () => {
+  // 🔹 On récupère *tous* les Pokémon au démarrage
+  const allRes = await fetch(`${baseUrl}/pokemon?limit=1000`);
+  const allData = await allRes.json();
+
+  // 🧠 On ajoute les noms français (species endpoint)
+  allPokemonList = await Promise.all(
+    allData.results.map(async (p) => {
+      const id = p.url.split("/").filter(Boolean).pop();
+      const speciesRes = await fetch(`${baseUrl}/pokemon-species/${id}`);
+      const speciesData = await speciesRes.json();
+      const nameFR =
+        speciesData.names.find((n) => n.language.name === "fr")?.name ||
+        p.name;
+
+      return { id: Number(id), name: p.name, nameFR, url: p.url };
+    })
+  );
+
+
+  // --- Chargement initial de la première page ---
+  await fetchPage(1);
+
+  // --- Pagination ---
   document.getElementById("btnNext").addEventListener("click", () => {
     if (nextPageUrl) fetchPage(currentPage + 1);
   });
@@ -292,31 +378,35 @@ window.addEventListener("DOMContentLoaded", () => {
   document.getElementById("btnPrev").addEventListener("click", () => {
     if (prevPageUrl && currentPage > 1) fetchPage(currentPage - 1);
   });
-  document
-    .getElementById("searchInput")
-    .addEventListener("input", async (e) => {
-      const term = e.target.value.toLowerCase().trim();
-      const container = document.getElementById("characters");
-      container.innerHTML = "";
 
-      if (term === "") {
-        fetchPage(currentPage);
-        return;
+  // --- Recherche ---
+  document.getElementById("searchInput").addEventListener("input", async (e) => {
+    const term = e.target.value.toLowerCase().trim();
+    const container = document.getElementById("characters");
+    container.innerHTML = "";
+
+    if (!term) {
+      const start = (currentPage - 1) * 20;
+      const pageSlice = allPokemonList.slice(start, start + 20);
+      for (const p of pageSlice) {
+        await showList(p);
       }
+      return;
+    }
 
-      const filtered = allPokemonList.filter((p) =>
-        p.name.toLowerCase().includes(term)
-      );
+    const filtered = allPokemonList.filter((p) =>
+      p.nameFR.toLowerCase().includes(term)
+    );
 
-      if (filtered.length === 0) {
-        container.innerHTML =
-          "<p class='text-center text-gray-500'>Aucun Pokémon trouvé 😔</p>";
-        return;
-      }
+    if (filtered.length === 0) {
+      container.innerHTML =
+        "<p class='text-center text-gray-500'>Aucun Pokémon trouvé 😔</p>";
+      return;
+    }
 
-      const limit = Math.min(filtered.length, 20);
-      for (let i = 0; i < limit; i++) {
-        await showList(filtered[i]);
-      }
-    });
+    for (const p of filtered.slice(0, 20)) {
+      await showList(p);
+    }
+  });
 });
+
